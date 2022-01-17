@@ -1,0 +1,24 @@
+[
+    {
+        "domain": "discord",
+        "distance": 2
+    },
+    {
+        "domain": ["discord", "gift"],
+        "distance": 3
+    },
+    {
+        "domain": ["discord", "nitro"],
+        "distance": 3
+    },
+    {
+        "domain": ["free", "nitro"],
+        "distance": 3
+    },
+    {
+        "and": [
+            {"token": "free"},
+            {"token": "nitro"}
+        ]
+    }
+]
