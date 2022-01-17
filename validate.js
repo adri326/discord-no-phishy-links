@@ -1,7 +1,7 @@
 const levenshtein = require("js-levenshtein");
 const stop_phishing = require('stop-discord-phishing');
 
-const allowed_domains = require("./allowed_domains.json");
+const allowed_domains = require("./allowed_domains.json").map(domain => domain.split(".").reverse());
 const flairs = require("./flairs.json");
 
 function permutator(array) {
@@ -73,11 +73,28 @@ function check_domain(domain, flair) {
     }
 }
 
+function is_allowed_domain(domain) {
+    let parts = domain.toLowerCase().split(".").reverse();
+
+    for (let allowed_domain of allowed_domains) {
+        let is_valid = true;
+        for (let n = 0; n < allowed_domain.length; n++) {
+            if (allowed_domain[n] !== parts[n]) {
+                is_valid = false;
+                break;
+            }
+        }
+        if (is_valid) return true;
+    }
+
+    return false;
+}
+
 function check_flair(link, flair) {
     let distance = flair.distance ?? 0;
     if (flair.domain) {
         let domain = (link.split("/").filter(Boolean)[0] || "").toLowerCase();
-        if (!allowed_domains.includes(domain) && !check_domain(domain, flair)) return false;
+        if (!is_allowed_domain(domain) && !check_domain(domain, flair)) return false;
     }
 
     return true;
@@ -91,6 +108,8 @@ function validate(link) {
 }
 
 module.exports.validate_message = async function validate_message(content, use_stop_phishing = true) {
+    // see https://github.com/nikolaischunk/stop-discord-phishing/issues/3
+    content = content.replace(/\bdiscord.gift\b(?![\.\-_\?])/g, "discord.com");
     let regex = /\w+:\/\/(\S+)/g; // crude but will match a superset of that of the urls
     let match;
     while (match = regex.exec(content)) {

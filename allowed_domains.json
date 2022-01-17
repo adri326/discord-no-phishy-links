@@ -1,14 +1,14 @@
 [
-    "*.discord.gg",
-    "*.discord.com",
-    "*.discordapp.com",
-    "*.discord.media",
-    "*.discordapp.net",
-    "*.discordcdn.com",
-    "*.discord.dev",
-    "*.discord.new",
-    "*.discord.gift",
-    "*.discordstatus.com",
-    "*.dis.gd",
-    "*.discord.co"
+    "discord.gg",
+    "discord.com",
+    "discordapp.com",
+    "discord.media",
+    "discordapp.net",
+    "discordcdn.com",
+    "discord.dev",
+    "discord.new",
+    "discord.gift",
+    "discordstatus.com",
+    "dis.gd",
+    "discord.co"
 ]

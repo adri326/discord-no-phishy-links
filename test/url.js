@@ -3,11 +3,11 @@ const {validate_message} = require("../validate.js");
 
 describe("Test confirmed scam links", () => {
     async function assertBad(url) {
-        assert((await validate_message(url, true))[0]);
+        assert((await validate_message(url, true))[0], `${url} should be bad`);
     }
 
     async function assertGood(url) {
-        assert(!(await validate_message(url, true))[0]);
+        assert(!(await validate_message(url, true))[0], `${url} should be good`);
     }
 
     it("Warmup", async () => {
@@ -25,5 +25,14 @@ describe("Test confirmed scam links", () => {
             `https://dlscord-new-year.ru.com/gw20HkJ5qmqG13 Only the account must not be empty, otherwise it will not be given\n` +
             `If they give a gift for a long time, then just wait. Sometimes you have to wait up to 2 days`
         );
+    });
+
+    it("Discord's links", async () => {
+        for (let domain of require("../allowed_domains.json")) {
+            await assertGood(`https://${domain}/`);
+            await assertGood(`https://free-nitro.${domain}/`);
+            await assertGood(`http://${domain}/`);
+            await assertGood(`http://free-nitro.${domain}/`);
+        }
     });
 });

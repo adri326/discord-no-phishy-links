@@ -1,3 +1,4 @@
 node_modules/
 secret.json
 .DS_Store
+users.json
