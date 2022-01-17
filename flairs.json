@@ -4,6 +4,15 @@
         "distance": 2
     },
     {
+        "domain": "discordapp",
+        "distance": 3
+    },
+    {
+        "domain": "disgd",
+        "distance": 1
+    },
+
+    {
         "domain": ["discord", "gift"],
         "distance": 3
     },
@@ -12,12 +21,55 @@
         "distance": 3
     },
     {
+        "domain": ["discord", "free", "nitro"],
+        "distance": 3
+    },
+    {
         "domain": ["free", "nitro"],
         "distance": 3
+    },
+
+    {
+        "domain": ["discord", "halloween"],
+        "distance": 4
+    },
+    {
+        "domain": ["discord", "christmas"],
+        "distance": 4
     },
     {
         "domain": ["discord", "new-year"],
         "distance": 4
+    },
+
+    {
+        "domain": ["discord", "airdrop"],
+        "distance": 4
+    },
+    {
+        "domain": ["discord", "hypesquad"],
+        "distance": 4
+    },
+    {
+        "domain": ["discord", "hype"],
+        "distance": 4
+    },
+    {
+        "domain": ["discord", "steam"],
+        "distance": 4
+    },
+
+    {
+        "domain": ["discord", "support"],
+        "distance": 4
+    },
+    {
+        "domain": ["discord", "verification"],
+        "distance": 5
+    },
+    {
+        "domain": ["discord", "cdn"],
+        "distance": 3
     },
     {
         "and": [
