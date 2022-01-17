@@ -16,6 +16,10 @@
         "distance": 3
     },
     {
+        "domain": ["discord", "new-year"],
+        "distance": 4
+    },
+    {
         "and": [
             {"token": "free"},
             {"token": "nitro"}
