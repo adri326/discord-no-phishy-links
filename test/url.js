@@ -1,5 +1,6 @@
 const assert = require("assert");
-const {validate_message} = require("../validate.js");
+const stop_phishing = require("stop-discord-phishing");
+const {validate_message, validate} = require("../validate.js");
 
 describe("Test confirmed scam links", () => {
     async function assertBad(url) {
@@ -34,5 +35,18 @@ describe("Test confirmed scam links", () => {
             await assertGood(`http://${domain}/`);
             await assertGood(`http://free-nitro.${domain}/`);
         }
+    });
+
+    it("Match at least 25% of stop-discord-phishing's database", async () => {
+        let domains = await stop_phishing.listDomains();
+        let matched = 0;
+        let promiseses = [];
+        for (let domain of domains) {
+            let res = await validate_message(`http://${domain}/`, false);
+            if (res[0]) {
+                matched++;
+            }
+        }
+        assert(matched >= domains.length * .25, `${matched} matched out of ${domains.length}`);
     });
 });

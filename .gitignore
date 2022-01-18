@@ -1,4 +1,7 @@
 node_modules/
-secret.json
 .DS_Store
+
+# Sensitive data:
+secret.json
 users.json
+guilds.json

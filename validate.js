@@ -71,6 +71,8 @@ function check_domain(domain, flair) {
             }
         }
     }
+
+    return true;
 }
 
 function is_allowed_domain(domain) {
@@ -100,9 +102,11 @@ function check_flair(link, flair) {
     return true;
 }
 
-function validate(link) {
+const validate = module.exports.validate = function validate(link) {
     for (let flair of flairs) {
-        if (!check_flair(link, flair)) return false;
+        if (!check_flair(link, flair)) {
+            return false;
+        }
     }
     return true;
 }
@@ -114,7 +118,7 @@ module.exports.validate_message = async function validate_message(content, use_s
     let match;
     while (match = regex.exec(content)) {
         if (!validate(match[1])) {
-            return [true, "Levenhstein(" + match[0] + ")"];
+            return [true, "Levenshtein(" + match[0] + ")"];
         }
     }
 
