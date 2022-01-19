@@ -115,8 +115,8 @@ bot.on("messageCreate", async (msg) => {
     if (msg.author.bot) return;
 
     // Ignore messages by those who have the "manage message" permission
-    // let member = guild.members.get(msg.author.id);
-    // if (msg.channel.permissionsOf(member).has("manageMessages")) return;
+    let member = guild.members.get(msg.author.id);
+    if (msg.channel.permissionsOf(member).has("manageMessages")) return;
 
     let [is_bad, reason] = await validate_message(msg.content);
 
