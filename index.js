@@ -10,6 +10,7 @@ const MAX_WARNINGS = 4;
 const NO_ACTION = 0;
 const ACTION_BAN = 1;
 const ACTION_KICK = 2;
+const ACTION_TIMEOUT = 4;
 const ACTION_ERROR = -1;
 
 const DELETE_OK = 1;
@@ -30,8 +31,79 @@ const bot = new Eris(require("./secret.json").token, {
 let users = fs.existsSync(USERS_FILE) ? new Map(JSON.parse(fs.readFileSync(USERS_FILE, "utf8"))) : [];
 let guilds = fs.existsSync(GUILDS_FILE) ? new Map(JSON.parse(fs.readFileSync(GUILDS_FILE, "utf8"))) : [];
 
-bot.on("ready", () => {
+function get_guild_settings(guild) {
+    if (guilds.has(guild.id)) {
+        return guilds.get(guild.id);
+    } else {
+        let res = {
+            notify_channel: null,
+            max_warnings: 4,
+            action: ACTION_KICK,
+        };
+        guilds.set(guild.id, res);
+        return res;
+    }
+}
+
+
+bot.on("ready", async () => {
     console.log("Logged in!");
+
+    const COMMAND_OPTIONS = Eris.Constants.ApplicationCommandOptionTypes;
+
+    await bot.createCommand({
+        type: COMMAND_OPTIONS.CHAT_INPUT,
+        name: "set-max-warnings",
+        description: "Sets the max number of warnings that a user may get in a day for this server before action is taken",
+        options: [
+            {
+                name: "amount",
+                description: "The value to set max_warnings to",
+                required: true,
+                type: COMMAND_OPTIONS.STRING,
+            }
+        ]
+    });
+
+    await bot.createCommand({
+        type: COMMAND_OPTIONS.CHAT_INPUT,
+        name: "set-action",
+        description: "Sets the action to take if a user sends a phishing link while having no warning left",
+        options: [
+            {
+                name: "action-type",
+                description: "Choose one of the following actions",
+                required: true,
+                type: COMMAND_OPTIONS.STRING,
+                choices: [
+                    {name: "None", value: "none"},
+                    // {name: "Timeout", value: "timeout"}, // Not supported in Eris it seems :(
+                    {name: "Kick", value: "kick"},
+                    {name: "Ban", value: "ban"},
+                ]
+            }
+        ]
+    });
+
+    await bot.createCommand({
+        type: COMMAND_OPTIONS.CHAT_INPUT,
+        name: "set-notify-channel",
+        description: "Sets the channel to send notifications of detected phishing links to",
+        options: [
+            {
+                name: "channel",
+                description: "Choose a channel",
+                required: true,
+                type: COMMAND_OPTIONS.CHANNEL
+            }
+        ]
+    });
+
+    await bot.createCommand({
+        type: COMMAND_OPTIONS.CHAT_INPUT,
+        name: "get-settings",
+        description: "Gets the settings for this bot on this server",
+    });
 });
 
 bot.on("messageCreate", async (msg) => {
@@ -72,17 +144,7 @@ bot.on("messageCreate", async (msg) => {
         }
 
         // Get guild settings
-        let guild_settings;
-        if (guilds.has(guild.id)) {
-            guild_settings = guilds.get(guild.id);
-        } else {
-            guild_settings = {
-                notify_channel: null,
-                max_warnings: 4,
-                action: ACTION_KICK,
-            };
-            guilds.set(guild.id, guild_settings);
-        }
+        let guild_settings = get_guild_settings(guild);
 
         // Delete the message
         let delete_status;
@@ -105,6 +167,8 @@ bot.on("messageCreate", async (msg) => {
                     await guild.banMember(msg.author.id, 1, reason);
                 } else if (guild_settings.action == ACTION_KICK) {
                     await guild.kickMember(msg.author.id, reason);
+                } else if (guild_settings.action == ACTION_TIMEOUT) {
+                    throw new Error("Unimplemented");
                 }
                 action_status = guild_settings.action;
             } catch (e) {
@@ -154,6 +218,9 @@ bot.on("messageCreate", async (msg) => {
                     if (guild_settings.action === ACTION_KICK) {
                         message += `- kick user (${action_status === ACTION_KICK ? "OK" : "**ERROR**: " + action_error.toString()})\n`;
                     }
+                    if (guild_settings.action === ACTION_TIMEOUT) {
+                        message += `- time user out (${action_status === ACTION_TIMEOUT ? "OK" : "**ERROR**: " + action_error.toString()})\n`;
+                    }
                 }
 
                 await notify_channel.createMessage({
@@ -167,6 +234,90 @@ bot.on("messageCreate", async (msg) => {
             } catch (e) {
                 console.error(e);
             }
+        }
+    }
+});
+
+bot.on("interactionCreate", (interaction) => {
+    if (interaction instanceof Eris.CommandInteraction) {
+        let guild = interaction.channel?.guild;
+        let member = interaction.member;
+        let guild_settings = guild ? get_guild_settings(guild) : null;
+        try {
+            switch (interaction.data.name) {
+                case "set-max-warnings":
+                case "set-action":
+                case "set-notify-channel":
+                    if (!guild || !member) return interaction.createMessage("**Error:** not in a server!");
+
+                    if (!member.permissions.has("manageGuild")) {
+                        return interaction.createMessage(`**Error:** you are missing the "Manage Server" permission!`);
+                    }
+
+                    if (interaction.data.name === "set-max-warnings") {
+                        let value = interaction.data.options[0].value;
+
+                        if (!Number.isInteger(+value)) {
+                            return interaction.createMessage("**Error:** `value` was not set to a valid number!");
+                        }
+
+                        guild_settings.max_warnings = +value;
+
+                        return interaction.createMessage("Max warnings is now set to " + guild_settings.max_warnings);
+                    } else if (interaction.data.name === "set-action") {
+                        let value = interaction.data.options[0].value;
+
+                        if (value === "none") value = NO_ACTION;
+                        else if (value === "ban") value = ACTION_BAN;
+                        else if (value === "kick") value = ACTION_KICK;
+                        else if (value === "timeout") value = ACTION_TIMEOUT;
+                        else return interaction.createMessage(
+                            "**Error:** `value` was not set to a valid action. Expected `none`, `ban` or `kick`, got `" + value + "`"
+                        );
+
+                        guild_settings.action = value;
+
+                        let message = "Action to be taken after the warnings are exhausted is now: `";
+                        if (guild_settings.action === NO_ACTION) message += "none";
+                        if (guild_settings.action === ACTION_BAN) message += "ban";
+                        if (guild_settings.action === ACTION_KICK) message += "kick";
+                        if (guild_settings.action === ACTION_TIMEOUT) message += "timeout";
+                        message += "`";
+
+                        return interaction.createMessage(message);
+                    } else if (interaction.data.name === "set-notify-channel") {
+                        let value = interaction.data.options[0].value;
+
+                        let channel = guild.channels.get(value);
+
+                        guild_settings.notify_channel = value;
+
+                        return interaction.createMessage("Notify channel has been set to `" + channel.name + "`");
+                    }
+                    break;
+                case "get-settings":
+                    if (!guild || !member) return interaction.createMessage("**Error:** not in a server!");
+
+                    let message = "The settings for this server are:\n";
+
+                    message += `Max warnings: \`${guild_settings.max_warnings}\`\n`;
+
+                    message += `Action after warnings were exhausted: \``;
+                    if (guild_settings.action === NO_ACTION) message += "none";
+                    if (guild_settings.action === ACTION_BAN) message += "ban";
+                    if (guild_settings.action === ACTION_KICK) message += "kick";
+                    if (guild_settings.action === ACTION_TIMEOUT) message += "timeout";
+                    message += `\`\n`;
+
+                    message += `Notification channel: \`${guild.channels.get(guild_settings.notify_channel)?.name ?? "none"}\`\n`;
+
+                    return interaction.createMessage(message);
+            }
+        } catch (e) {
+            console.error(e);
+            try {
+                interaction.reply(e.toString());
+            } catch (_) {}
         }
     }
 });

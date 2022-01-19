@@ -5,3 +5,6 @@ node_modules/
 secret.json
 users.json
 guilds.json
+
+*.png~
+*.kra~
