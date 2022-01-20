@@ -104,6 +104,11 @@ bot.on("ready", async () => {
         name: "get-settings",
         description: "Gets the settings for this bot on this server",
     });
+
+    bot.editStatus("online", {
+        name: "adri326/discord-no-phishy-links",
+        type: 0,
+    });
 });
 
 bot.on("messageCreate", async (msg) => {
@@ -188,7 +193,8 @@ bot.on("messageCreate", async (msg) => {
                 `If you think that this was a mistake, then please contact one of the moderators.\n\n` +
                 `Message ID: \`${msg.id}\`\n` +
                 `Author: \`${msg.author.id}\`\n` +
-                `You have: \`${user.warns}/${guild_settings.max_warnings}\` warnings. These will be cleared in ${Math.round(PARDON_DURATION / 3600 / 1000)} hours.\n`
+                `You have: \`${user.warns}/${guild_settings.max_warnings}\` warnings. These will be cleared in ${Math.round(PARDON_DURATION / 3600 / 1000)} hours.\n\n` +
+                `*This bot's source code is available at https://github.com/adri326/discord-no-phishy-links/*\n`
             );
             notify_status = NOTIFY_OK;
         } catch (e) {
@@ -310,6 +316,8 @@ bot.on("interactionCreate", (interaction) => {
                     message += `\`\n`;
 
                     message += `Notification channel: \`${guild.channels.get(guild_settings.notify_channel)?.name ?? "none"}\`\n`;
+
+                    message += `\n*This bot's source code is available at https://github.com/adri326/discord-no-phishy-links/*\n`;
 
                     return interaction.createMessage(message);
             }

@@ -22,7 +22,7 @@
     },
     {
         "domain": ["discord", "free", "nitro"],
-        "distance": 3
+        "distance": 5
     },
     {
         "domain": ["free", "nitro"],
@@ -56,6 +56,10 @@
     },
     {
         "domain": ["discord", "steam"],
+        "distance": 4
+    },
+    {
+        "domain": ["discord", "twitch"],
         "distance": 4
     },
 

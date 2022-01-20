@@ -1,5 +1,5 @@
 {
-  "name": "anti-discord-phishing",
+  "name": "discord-no-phishy-links",
   "version": "1.0.0",
   "description": "Blocks and kicks users who post discord phishing links",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adri326/anti-discord-phishing.git"
+    "url": "git+https://github.com/adri326/no-phishy-links.git"
   },
   "keywords": [
     "phishing"
@@ -16,13 +16,15 @@
   "author": "Adrien Burgun (Shad Amethyst)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/adri326/anti-discord-phishing/issues"
+    "url": "https://github.com/adri326/no-phishy-links/issues"
   },
-  "homepage": "https://github.com/adri326/anti-discord-phishing#readme",
+  "homepage": "https://github.com/adri326/no-phishy-links#readme",
   "dependencies": {
     "eris": "^0.16.1",
     "js-levenshtein": "^1.1.6",
-    "mocha": "^9.1.4",
     "stop-discord-phishing": "github:adri326/stop-discord-phishing"
+  },
+  "devDependencies": {
+    "mocha": "^9.1.4"
   }
 }
