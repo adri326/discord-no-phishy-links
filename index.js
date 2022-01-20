@@ -340,14 +340,20 @@ setInterval(() => {
 
 bot.connect();
 
-process.on("exit", () => {
-    // No event loop allowed here, so we have to use the synchronous api
-
+function save_settings() {
     fs.writeFileSync(USERS_FILE, JSON.stringify([...users]), "utf8");
     console.log("Saved users to file " + USERS_FILE);
 
     fs.writeFileSync(GUILDS_FILE, JSON.stringify([...guilds]), "utf8");
     console.log("Saved guilds to file " + GUILDS_FILE);
+}
+
+setInterval(save_settings, 1000 * 3600); // Save settings every hour
+
+process.on("exit", () => {
+    // No event loop allowed here, so we have to use the synchronous api
+
+    save_settings();
 });
 
 process.on("SIGINT", () => {

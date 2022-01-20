@@ -5,6 +5,8 @@ It uses a combination of domain matching using [Levenshtein distance](https://en
 
 This is meant to be efficient against low-effort, credential-stealing attacks carried over on discord by hacked user accounts.
 
+![example report](./resources/screenshot.png)
+
 ## Background
 
 Discord has as of writing this been unable to block or mitigate this kind of attack.
@@ -27,6 +29,24 @@ There are a few options already available out there:
 - [AntiScamLinksDiscord](https://github.com/LavenderCantCode/AntiScamLinksDiscord), open source
 
 None of them quite fit our needs (being open source, being able to prevent future attacks, being able to host an instance of it for ourselves), so I wrote this bot.
+
+## Installation and running
+
+First, clone this repository with `git` and install the required dependencies with `npm`:
+
+```sh
+git clone https://github.com/adri326/stop-discord-phishing
+cd stop-discord-phishing
+
+npm install
+
+# Used by the next step
+cp secret.template.json secret.json
+```
+
+Then, copy `secret.template.json` to `secret.json` and fill in the required fields (please read through the source code of the bot *before* blindly putting in your token).
+
+Finally, you can start the server by running `node .`
 
 ## How it works
 
