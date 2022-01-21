@@ -18,6 +18,7 @@ describe("Test confirmed scam links", () => {
     it("Simple links", async () => {
         await assertBad("https://dlscord-new-year.ru.com/gw20HkJ5qmqG13");
         await assertBad("https://discoqd.com/newyear");
+        await assertBad("https://djscord-airdrops.com/F4d7nJU");
 
         await assertGood("dlscord links are so spammy");
 

@@ -1,6 +1,6 @@
 {
   "name": "discord-no-phishy-links",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Blocks and kicks users who post discord phishing links",
   "main": "index.js",
   "scripts": {

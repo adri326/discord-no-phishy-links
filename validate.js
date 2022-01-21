@@ -122,7 +122,7 @@ module.exports.validate_message = async function validate_message(content, use_s
         }
     }
 
-    if (use_stop_phishing && await stop_phishing.checkMessage(content)) {
+    if (use_stop_phishing && await stop_phishing.checkMessage(content, true)) {
         let findSuspiciousLink = stop_phishing.findSuspiciousLink || (async () => "");
         return [true, `stop-discord-phishing checkMessage(${await findSuspiciousLink(content)})`];
     }
