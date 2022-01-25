@@ -18,6 +18,7 @@ describe("Test confirmed scam links", function() {
     });
 
     it("Simple links", async () => {
+        // Don't click these links, btw
         await assertBad("https://dlscord-new-year.ru.com/gw20HkJ5qmqG13");
         await assertBad("https://discoqd.com/newyear");
         await assertBad("https://djscord-airdrops.com/F4d7nJU");
