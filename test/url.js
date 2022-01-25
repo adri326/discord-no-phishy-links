@@ -2,7 +2,9 @@ const assert = require("assert");
 const stop_phishing = require("stop-discord-phishing");
 const {validate_message, validate} = require("../validate.js");
 
-describe("Test confirmed scam links", () => {
+describe("Test confirmed scam links", function() {
+    this.timeout(5000); // We are quite network-reliant
+
     async function assertBad(url) {
         assert((await validate_message(url, true))[0], `${url} should be bad`);
     }
@@ -21,12 +23,16 @@ describe("Test confirmed scam links", () => {
         await assertBad("https://djscord-airdrops.com/F4d7nJU");
 
         await assertGood("dlscord links are so spammy");
+        await assertGood("https://cdn.discordapp.com/attachments/blabla");
 
         await assertBad(
             `@everyone Hi Steam gives nitro gifts for 3 months for the new year\n` +
             `https://dlscord-new-year.ru.com/gw20HkJ5qmqG13 Only the account must not be empty, otherwise it will not be given\n` +
             `If they give a gift for a long time, then just wait. Sometimes you have to wait up to 2 days`
         );
+
+        await assertBad("antibot.cc");
+        await assertBad("https://antibot.cc/omgitsfreeidk");
     });
 
     it("Discord's links", async () => {
