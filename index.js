@@ -111,7 +111,7 @@ bot.on("ready", async () => {
     });
 });
 
-bot.on("messageCreate", async (msg) => {
+async function analyze_message(msg) {
     // Ignore messages outside of guilds
     let guild = msg.channel?.guild;
     if (!guild) return;
@@ -242,7 +242,10 @@ bot.on("messageCreate", async (msg) => {
             }
         }
     }
-});
+}
+
+bot.on("messageCreate", (msg) => analyze_message(msg));
+bot.on("messageUpdate", (msg) => analyze_message(msg));
 
 bot.on("interactionCreate", (interaction) => {
     if (interaction instanceof Eris.CommandInteraction) {
